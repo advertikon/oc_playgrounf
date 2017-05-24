@@ -1,0 +1,35 @@
+/config.php
+admin/config.php
+#system/config/
+.idea/
+
+!index.html
+
+download/
+image/data/
+image/cache/
+system/cache/
+system/logs/
+install/
+
+system/storage/
+
+# vQmod log files
+vqmod/logs/*
+# vQmod cache files
+vqmod/vqcache/*
+vqmod/checked.cache
+vqmod/mods.cache
+
+*.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon must end with two \r
+Icon
+
+
+# Thumbnails
+._*
+image.tar
+#image/catalog/
