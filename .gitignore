@@ -7,12 +7,16 @@ admin/config.php
 
 download/
 image/data/
-image/cache/
-system/cache/
-system/logs/
+image/cache/*
+system/cache/*
+system/logs/*
 install/
 
-system/storage/
+system/storage/cache/*
+system/storage/download/*
+system/storage/logs/*
+system/storage/modification/*
+system/storage/upload/*
 
 # vQmod log files
 vqmod/logs/*
