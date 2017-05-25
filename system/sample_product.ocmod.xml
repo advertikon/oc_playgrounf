@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+	<name>Sample product</name>
+	<code>s_product</code>
+	<version>1.0.0</version>
+	<author></author>
+	<link></link>
+	
+	<file path="catalog/controller/product/product.php">
+		<operation>
+			<search><![CDATA[$data['attribute_groups']]]></search>
+			<add position="after"><![CDATA[
+				$ret = null;
+
+				function get_attr( $where, &$ret ) {
+					if ( ! is_array( $where ) ) {
+						return;
+					}
+
+					foreach( $where as $one ) {
+						if ( is_array( $one ) ) {
+							if ( isset( $one['attribute_group_id'] ) ) {
+								get_attr( $one['attribute'], $ret );
+
+							} elseif (
+								is_array( $one ) &&
+								isset( $one['attribute_id'] ) &&
+								strtolower( $one['name'] ) === 'sample' &&
+								strtolower( $one['text'] ) === 'da'
+							) {
+								$ret = $one['attribute_id'];
+								throw new Exception( 'exit' );
+							}
+						}
+					}
+				}
+
+				try {
+					get_attr( $data['attribute_groups'], $ret );
+
+				} catch ( Exception $e ) {
+
+				}
+
+				$opt_q = $this->db->query(
+					"SELECT DISTINCT LOWER( ovd.name ) as name
+					FROM " . DB_PREFIX . "product p
+					LEFT JOIN " . DB_PREFIX . "product_option_value pov
+						ON(pov.product_id = p.product_id)
+
+					LEFT JOIN " . DB_PREFIX . "option o
+						ON(pov.option_id = o.option_id)
+
+					LEFT JOIN " . DB_PREFIX . "option_description od
+						ON(o.option_id = od.option_id)
+
+					LEFT JOIN " . DB_PREFIX . "option_value ov
+						ON(ov.option_value_id = pov.option_value_id)
+
+					LEFT JOIN " . DB_PREFIX . "option_value_description ovd
+						ON(ov.option_value_id = ovd.option_value_id)
+
+					WHERE LOWER( od.name ) = 'manufacturer' AND p.model = 'sample'"
+				);
+
+				var_dump( $opt_q->rows, strtolower( $product_info['manufacturer'] ) );
+
+				$manufacturer = false;
+
+				if ( $opt_q && $opt_q->num_rows ) {
+					foreach( $opt_q as $opt ) {
+						if ( $opt['name'] === strtolower( $product_info['manufacturer'] ) ) {
+							$manufacturer = true;
+							break;
+						}
+					}
+				}
+
+				$data['show_sample'] = ! is_null( $ret ) && $manufacturer;
+			]]></add>
+		</operation>
+	</file>
+
+	<file path="catalog/view/theme/*/template/product/product.tpl">
+		<operation>
+			<search><![CDATA[<button type="button" id="button-cart"]]></search>
+			<add position="after" offset="2"><![CDATA[
+				<?php if ( $show_sample ) : ?>
+				<button type="button" id="button-sample" class="btn" data-loading-text="Adăugarea în coș">Comanda un eșantion</button>
+				<script>
+					$( "#button-sample" ).on( "click", function() {
+						var button = $( this );
+
+						button.button( "loading" );
+
+						$.post( '/index.php?route=checkout/cart/add', {} )
+
+						.done( function() {
+
+						} )
+						.always( function() {
+							button.button( "reset" );
+						} );
+					} );
+				</script>
+				<?php endif; ?>
+			]]></add>
+		</operation>
+	</file>
+
+</modification>
