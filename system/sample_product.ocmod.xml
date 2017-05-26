@@ -34,7 +34,7 @@
 							} elseif (
 								is_array( $one ) &&
 								isset( $one['attribute_id'] ) &&
-								strtolower( $one['name'] ) === 'sample' &&
+								strtolower( $one['name'] ) === 'mostră disponibilă' &&
 								strtolower( $one['text'] ) === 'da'
 							) {
 								$ret = $one['attribute_id'];
