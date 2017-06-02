@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+	<name><![CDATA[
+		Decimal quantity
+		Adds ability to set decimal quantity for some products
+	]]></name>
+	<code>d_quantity</code>
+	<version>1.0.0</version>
+	<author></author>
+	<link></link>
+	<configuration>
+		
+	</configuration>
+	
+	<file path="system/library/cart/cart.php">
+		<operation>
+			<search>(int)$quantity</search>
+			<add position="replace">(float)$quantity</add>
+		</operation>
+
+		<operation>
+			<search><![CDATA[public function update($cart_id, $quantity) {]]></search>
+			<add position="after"><![CDATA[
+				$dq = $this->db->query( "select * from " . DB_PREFIX . "product_option po left join " . DB_PREFIX . "option_description od using(option_id) WHERE po.product_id = (SELECT product_id FROM " . DB_PREFIX . "cart WHERE cart_id = " .  (int)$cart_id . " LIMIT 1 ) AND LOWER( od.name ) = 'lățime perete (cm)'" );
+
+				$decimal = false;
+
+				if ( $dq && $dq->num_rows ) {
+					$decimal = true;
+				}
+
+				if ( ! $decimal ) {
+					$quantity = (int)$quantity;
+				}
+			]]></add>
+		</operation>
+
+		<operation>
+			<search><![CDATA[if (!$query->row['total']) {]]></search>
+			<add position="before"><![CDATA[
+				$dq = $this->db->query( "select * from " . DB_PREFIX . "product_option po left join " . DB_PREFIX . "option_description od using(option_id) WHERE po.product_id = " . (int)$product_id . " AND LOWER( od.name ) = 'lățime perete (cm)'" );
+
+				$decimal = false;
+
+				if ( $dq && $dq->num_rows ) {
+					$decimal = true;
+				}
+
+				if ( $decimal ) {
+					$query->row['total'] = false;
+				}
+			]]></add>
+		</operation>
+	</file>
+
+	<file path="catalog/controller/checkout/cart.php">
+
+		<operation>
+			<search><![CDATA[(int)$this->request->post['quantity']]]></search>
+			<add position="replace"><![CDATA[(float)$this->request->post['quantity']]]></add>
+		</operation>
+
+		<operation>
+			<search><![CDATA[if (isset($this->request->post['option'])) {]]></search>
+			<add position="before"><![CDATA[
+				$dq = $this->db->query( "select * from " . DB_PREFIX . "product_option po left join " . DB_PREFIX . "option_description od using(option_id) WHERE po.product_id = " . $product_id . " AND LOWER( od.name ) = 'lățime perete (cm)'" );
+
+				$decimal = false;
+
+				if ( $dq && $dq->num_rows ) {
+					$decimal = true;
+				}
+
+				if ( ! $decimal ) {
+					$quantity = (int)$quantity;
+				}
+			]]></add>
+		</operation>
+
+		<operation>
+			<search><![CDATA[$this->cart->update($key, $value);]]></search>
+			<add position="before"><![CDATA[
+
+			]]></add>
+		</operation>
+
+	</file>
+
+	<file path="catalog/controller/product/product.php">
+		<operation>
+			<search><![CDATA[$this->response->setOutput($this->load->view('product/product', $data));]]></search>
+			<add position="before"><![CDATA[
+				$data['width_option_id'] = 0;
+				$data['height_option_id'] = 0;
+
+				$qwo = $this->db->query( "SELECT option_id FROM " . DB_PREFIX . "option_description WHERE name = 'Înălțime perete (cm)'" );
+				$qho = $this->db->query( "SELECT option_id FROM " . DB_PREFIX . "option_description WHERE name = 'Lățime perete (cm)'" );
+
+				if ( $qwo && $qwo->num_rows ) {
+					$data['width_option_id'] = $qwo->row['option_id'];
+				}
+
+				if ( $qho && $qho->num_rows ) {
+					$data['height_option_id'] = $qho->row['option_id'];
+				}
+
+				$data['decimal_price'] = $this->currency->format($this->tax->calculate($product_info['price'], $product_info['tax_class_id'], $this->config->get('config_tax')), $this->session->data['currency']);
+			]]></add>
+		</operation>
+	</file>
+
+	<file path="catalog/view/theme/*/template/product/product.tpl">
+		<operation>
+			<search><![CDATA[<input type="text" name="quantity" value="<?php echo $minimum; ?>" size="2" id="input-quantity" class="form-control" />]]></search>
+			<add position="replace"><![CDATA[
+				<?php if ( $height_option_id && $width_option_id ) : ?>
+				<input type="hidden" name="quantity" value="<?php echo $minimum; ?>" size="2" id="input-quantity" class="form-control"/>
+				<?php else: ?>
+				<input type="text" name="quantity" value="<?php echo $minimum; ?>" size="2" id="input-quantity" class="form-control" />
+				<?php endif; ?>
+			]]></add>
+		</operation>
+
+		<operation>
+			<search><![CDATA[<label class="control-label" for="input-quantity"><?php echo $entry_qty; ?></label>]]></search>
+			<add position="replace"><![CDATA[
+				<?php if ( $height_option_id && $width_option_id ) : ?>
+				<label class="control-label" for="input-quantity"><?php echo $entry_qty; ?><span id="decimal-quantity" data-price="<?php echo $decimal_price; ?>"></span></label>
+				<?php else: ?>
+				<label class="control-label" for="input-quantity"><?php echo $entry_qty; ?></label>
+				<?php endif; ?>
+			]]></add>
+		</operation>
+	</file>
+
+</modification>
+
+
