@@ -1,16 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <modification>
-	<name>Sample product</name>
+	<name><![CDATA[
+		Sample product
+		Adds option for a customer to order a sample of a specific product
+	]]></name>
 	<code>s_product</code>
 	<version>1.0.0</version>
 	<author></author>
 	<link></link>
+	<configuration>
+		Sample product's model - sample
+		Manufacturer option name - Manufacturer
+		Model option name - Model
+	</configuration>
 	
 	<file path="catalog/controller/product/product.php">
 		<operation>
 			<search><![CDATA[$data['attribute_groups']]]></search>
 			<add position="after"><![CDATA[
 				$ret = null;
+				$options = array();
 
 				function get_attr( $where, &$ret ) {
 					if ( ! is_array( $where ) ) {
@@ -25,7 +34,7 @@
 							} elseif (
 								is_array( $one ) &&
 								isset( $one['attribute_id'] ) &&
-								strtolower( $one['name'] ) === 'sample' &&
+								strtolower( $one['name'] ) === 'mostră disponibilă' &&
 								strtolower( $one['text'] ) === 'da'
 							) {
 								$ret = $one['attribute_id'];
@@ -43,7 +52,7 @@
 				}
 
 				$opt_q = $this->db->query(
-					"SELECT DISTINCT LOWER( ovd.name ) as name
+					"SELECT DISTINCT LOWER( ovd.name ) as name, pov.product_option_id, pov.product_option_value_id, pov.price as opt_price, p.price, pov.price_prefix, p.product_id, p.tax_class_id
 					FROM " . DB_PREFIX . "product p
 					LEFT JOIN " . DB_PREFIX . "product_option_value pov
 						ON(pov.product_id = p.product_id)
@@ -63,20 +72,46 @@
 					WHERE LOWER( od.name ) = 'manufacturer' AND p.model = 'sample'"
 				);
 
-				var_dump( $opt_q->rows, strtolower( $product_info['manufacturer'] ) );
+				// var_dump( $opt_q->rows, strtolower( $product_info['manufacturer'] ) );
 
 				$manufacturer = false;
 
 				if ( $opt_q && $opt_q->num_rows ) {
-					foreach( $opt_q as $opt ) {
+					foreach( $opt_q->rows as $opt ) {
 						if ( $opt['name'] === strtolower( $product_info['manufacturer'] ) ) {
-							$manufacturer = true;
+							$manufacturer = $opt;
+							$options[ $opt[ 'product_option_id'] ] = $opt['product_option_value_id'];
 							break;
 						}
 					}
 				}
 
+				if ( $manufacturer ) {
+					$mod_q = $this->db->query( "SELECT po.product_option_id FROM " . DB_PREFIX . "product_option po LEFT JOIN " . DB_PREFIX . "option o USING(option_id) LEFT JOIN " . DB_PREFIX . "option_description od USING(option_id) WHERE po.product_id = " . (int)$manufacturer['product_id'] . " AND LOWER( od.name ) = 'model';" );
+
+					if ( $mod_q && $mod_q->num_rows ) {
+						$options[ $mod_q->row['product_option_id'] ] = $product_info['model'];
+					}
+				}
+
+				$data['sample_query'] = array(
+					'product_id' => $manufacturer['product_id'],
+					'quantity'   => 1,
+					'option'     => $options,
+				);
+
+				// var_dump( $options );
+
 				$data['show_sample'] = ! is_null( $ret ) && $manufacturer;
+				
+				if ( $manufacturer['price_prefix'] === '+' ) {
+					$sampl_price = $manufacturer['price'] + $manufacturer['opt_price'];
+
+				} else {
+					$sampl_price = $manufacturer['price'] - $manufacturer['opt_price'];
+				}
+
+				$data['sample_price'] = $this->currency->format($this->tax->calculate( $sampl_price, $manufacturer['tax_class_id'] ), $this->session->data['currency'] );
 			]]></add>
 		</operation>
 	</file>
@@ -86,17 +121,52 @@
 			<search><![CDATA[<button type="button" id="button-cart"]]></search>
 			<add position="after" offset="2"><![CDATA[
 				<?php if ( $show_sample ) : ?>
-				<button type="button" id="button-sample" class="btn" data-loading-text="Adăugarea în coș">Comanda un eșantion</button>
+				<div style="float: right; margin-right: 15px; margin-top: 20px;">
+					<button type="button" id="button-sample" class="btn" data-loading-text="Adăugarea în coș" >Comandă mostră</button>
+					<span style="display: block;font-weight: bold;font-size: 1.1em">Preţul de probă: <?php echo $sample_price; ?></span>
+				</div>
 				<script>
 					$( "#button-sample" ).on( "click", function() {
 						var button = $( this );
 
 						button.button( "loading" );
 
-						$.post( '/index.php?route=checkout/cart/add', {} )
+						$.post( '/index.php?route=checkout/cart/add', JSON.parse( '<?php echo json_encode( $sample_query ); ?>' ) )
 
-						.done( function() {
+						.done( function( json ) {
+							$('.alert, .text-danger').remove();
+							$('.form-group').removeClass('has-error');
 
+							if (json['error']) {
+								if (json['error']['option']) {
+									for (i in json['error']['option']) {
+										var element = $('#input-option' + i.replace('_', '-'));
+
+										if (element.parent().hasClass('input-group')) {
+											element.parent().after('<div class="text-danger">' + json['error']['option'][i] + '</div>');
+										} else {
+											element.after('<div class="text-danger">' + json['error']['option'][i] + '</div>');
+										}
+									}
+								}
+
+								if (json['error']['recurring']) {
+									$('select[name=\'recurring_id\']').after('<div class="text-danger">' + json['error']['recurring'] + '</div>');
+								}
+
+								// Highlight any found errors
+								$('.text-danger').parent().addClass('has-error');
+							}
+
+							if (json['success']) {
+								$('.breadcrumb').after('<div class="alert alert-success">' + json['success'] + '<button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+
+								$('#cart > button').html('<span id="cart-total"><i class="fa fa-shopping-cart"></i> ' + json['total'] + '</span>');
+
+								$('html, body').animate({ scrollTop: 0 }, 'slow');
+
+								$('#cart > ul').load('index.php?route=common/cart/info ul li');
+							}
 						} )
 						.always( function() {
 							button.button( "reset" );
