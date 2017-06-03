@@ -93,24 +93,24 @@
 				$data['width_option_id'] = 0;
 				$data['height_option_id'] = 0;
 
-				$qwo = $this->db->query( "SELECT option_id FROM " . DB_PREFIX . "option_description WHERE name = 'Înălțime perete (cm)'" );
-				$qho = $this->db->query( "SELECT option_id FROM " . DB_PREFIX . "option_description WHERE name = 'Lățime perete (cm)'" );
+				$qwo = $this->db->query( "SELECT po.product_option_id FROM " . DB_PREFIX . "option_description od LEFT JOIN " . DB_PREFIX . "product_option po USING(option_id) WHERE od.name = 'Înălțime perete (cm)' AND po.product_id = " . Product_id );
+				$qho = $this->db->query( "SELECT po.product_option_id FROM " . DB_PREFIX . "option_description od LEFT JOIN " . DB_PREFIX . "product_option po USING(option_id) WHERE od.name = 'Lățime perete (cm)' AND po.product_id = " . $product_id );
 
 				if ( $qwo && $qwo->num_rows ) {
-					$data['width_option_id'] = $qwo->row['option_id'];
+					$data['width_option_id'] = $qwo->row['product_option_id'];
 				}
 
 				if ( $qho && $qho->num_rows ) {
-					$data['height_option_id'] = $qho->row['option_id'];
+					$data['height_option_id'] = $qho->row['product_option_id'];
 				}
 
-				$data['decimal_price'] = $this->currency->format($this->tax->calculate($product_info['price'], $product_info['tax_class_id'], $this->config->get('config_tax')), $this->session->data['currency']);
+				$data['decimal_price'] = $data['special'] ? $data['special'] : $data['price'];
 			]]></add>
 		</operation>
 	</file>
 
 	<file path="catalog/view/theme/*/template/product/product.tpl">
-		<operation>
+		<operation error="skip">
 			<search><![CDATA[<input type="text" name="quantity" value="<?php echo $minimum; ?>" size="2" id="input-quantity" class="form-control" />]]></search>
 			<add position="replace"><![CDATA[
 				<?php if ( $height_option_id && $width_option_id ) : ?>
@@ -121,14 +121,64 @@
 			]]></add>
 		</operation>
 
-		<operation>
-			<search><![CDATA[<label class="control-label" for="input-quantity"><?php echo $entry_qty; ?></label>]]></search>
-			<add position="replace"><![CDATA[
+		<operation error="skip">
+			<search><![CDATA[<div class="col-sm-12 quantity">]]></search>
+			<add position="before"><![CDATA[
 				<?php if ( $height_option_id && $width_option_id ) : ?>
-				<label class="control-label" for="input-quantity"><?php echo $entry_qty; ?><span id="decimal-quantity" data-price="<?php echo $decimal_price; ?>"></span></label>
+				<label class="control-label" style="width: 100%; padding:0 20px; font-size: 1em;">
+						<span style="float: left;"><b>Quantity:</b> <span id="decimal-quantity"></span> m<sup>2</sup></span>
+						<span style="float: right;"><b>Price:</b> <span id="decimal-price" data-price="<?php echo $decimal_price; ?>"></span></span>
+				</label>
 				<?php else: ?>
 				<label class="control-label" for="input-quantity"><?php echo $entry_qty; ?></label>
 				<?php endif; ?>
+			]]></add>
+		</operation>
+
+		<operation error="skip">
+			<search><![CDATA[<?php echo $footer; ?>]]></search>
+			<add position="before"><![CDATA[
+				<script>
+					var
+						heightElement =  null,
+						widthElement =  null,
+						priceElement = null,
+						price = null;
+
+					function getSquare() {
+						var
+							width = null,
+							height = null,
+							square = 0;
+
+						if ( heightElement.length === 0 || widthElement.length === 0 ) {
+							return square;
+						}
+
+						height = parseFloat( heightElement.val() );
+						width = parseFloat( widthElement.val() );
+						square = Math.max( 3, width * height / 10000 );
+
+						$( "#decimal-quantity" ).text( square.toFixed( 2 ) );
+						$( "#input-quantity" ).val( square );
+						$( "#decimal-price" ).text( priceElement.attr( "data-price" ).replace( /\d+(\.\d+)?/, ( square * price ).toFixed( 2 ) ) );
+
+						return square;
+					}
+
+					$( document ).ready( function() {
+						$(".quantity > *:not(button)").hide();
+						heightElement =  $( "#input-option<?php echo $height_option_id; ?>" ),
+						widthElement =  $( "#input-option<?php echo $width_option_id; ?>" );
+						priceElement = $( "#decimal-price" );
+						price = parseFloat( priceElement.attr( "data-price" ).replace( /^.*?(\d+(\.\d+)?).*?$/, "$1" ) );
+
+						heightElement.on( "input", getSquare );
+						widthElement.on( "input", getSquare );
+
+						getSquare();
+					} );
+				</script>
 			]]></add>
 		</operation>
 	</file>
