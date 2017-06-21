@@ -93,7 +93,7 @@
 				$data['width_option_id'] = 0;
 				$data['height_option_id'] = 0;
 
-				$qwo = $this->db->query( "SELECT po.product_option_id FROM " . DB_PREFIX . "option_description od LEFT JOIN " . DB_PREFIX . "product_option po USING(option_id) WHERE od.name = 'Înălțime perete (cm)' AND po.product_id = " . Product_id );
+				$qwo = $this->db->query( "SELECT po.product_option_id FROM " . DB_PREFIX . "option_description od LEFT JOIN " . DB_PREFIX . "product_option po USING(option_id) WHERE od.name = 'Înălțime perete (cm)' AND po.product_id = " . $product_id );
 				$qho = $this->db->query( "SELECT po.product_option_id FROM " . DB_PREFIX . "option_description od LEFT JOIN " . DB_PREFIX . "product_option po USING(option_id) WHERE od.name = 'Lățime perete (cm)' AND po.product_id = " . $product_id );
 
 				if ( $qwo && $qwo->num_rows ) {
@@ -138,6 +138,7 @@
 		<operation error="skip">
 			<search><![CDATA[<?php echo $footer; ?>]]></search>
 			<add position="before"><![CDATA[
+				<?php if ( $height_option_id && $width_option_id ) : ?>
 				<script>
 					var
 						heightElement =  null,
@@ -178,6 +179,7 @@
 
 						getSquare();
 					} );
+					<?php endif; ?>
 				</script>
 			]]></add>
 		</operation>
