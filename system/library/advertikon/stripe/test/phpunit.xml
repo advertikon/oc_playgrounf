@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/5.7/phpunit.xsd"
+         bootstrap="c.php"
+         backupGlobals="false"
+         colors="true"
+         beStrictAboutCoversAnnotation="true"
+         beStrictAboutOutputDuringTests="true"
+         beStrictAboutTestsThatDoNotTestAnything="true"
+         beStrictAboutTodoAnnotatedTests="true"
+         processIsolation="false"
+         debug="true"
+         stopOnError="false"
+         stopOnFailure="false"
+         verbose="true">
+    <testsuites>
+    <testsuite>
+        <directory suffix="Test.php">.</directory>
+        <directory suffix="Test.php">../../test</directory>
+    </testsuite>
+  </testsuites>
+
+	<php>
+		<includePath>.</includePath>
+		<includePath>..</includePath>
+		<includePath>../..</includePath>
+	</php>
+
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">..</directory>
+        </whitelist>
+    </filter>
+    <listeners>
+	  <listener class="TestListener" file="test_listner.php">
+	    <arguments>
+	      <array>
+	        <element key="0">
+	          <string>Sebastian</string>
+	        </element>
+	      </array>
+	      <integer>22</integer>
+	      <string>April</string>
+	      <double>19.78</double>
+	      <null/>
+	      <object class="stdClass"/>
+	    </arguments>
+	  </listener>
+</listeners>
+</phpunit>
