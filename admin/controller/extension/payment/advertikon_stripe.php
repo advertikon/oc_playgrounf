@@ -25,7 +25,7 @@
  * @source image/advertikon/stripe/*
  * @source admin/view/image/payment/advertikon_stripe.gif
  * 
- * @source admin/view/template/payment/advertikon/stripe/*
+ * @source admin/view/template/extension/payment/advertikon/stripe/*
  * @source system/library/advertikon/advertikon.php
  * @source system/library/advertikon/compressor/*
  * @source system/library/advertikon/exception/*

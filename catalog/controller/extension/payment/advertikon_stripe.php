@@ -11,7 +11,7 @@
  * @source catalog/view/javascript/advertikon/advertikon.js
  * @source catalog/view/javascript/advertikon/stripe/*
  * 
- * @source catalog/view/theme/default/template/payment/advertikon/stripe/*
+ * @source catalog/view/theme/default/template/extension/payment/advertikon/stripe/*
  */
 class ControllerExtensionPaymentAdvertikonStripe extends Controller {
 
