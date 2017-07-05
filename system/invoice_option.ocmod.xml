@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <modification>
-	<name>Invlice Options</name>
-	<code>invlice_option</code>
+	<name>Invoice Options</name>
+	<code>invoice_option</code>
 	<version>1.0.0</version>
 	<author></author>
 	<link></link>
