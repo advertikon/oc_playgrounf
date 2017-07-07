@@ -83,7 +83,7 @@
 		$c_model = $this->{"model_$model_name"};
 		$adk = \Advertikon\Company\Advertikon::instance();
 
-		if ( $adk->config( "status" ) ) {
+		if ( $adk->config( "status" ) && ! empty( $this->request->post['company']['enabled'] ) ) {
 			if ( isset( $this->request->post['company']['existing'] ) && $this->request->post['company']['existing'] == 'true') {
 				if ( empty( $this->request->post['company']['id'] ) ) {
 					$json['error']['warning'] = $adk->__( 'Company ID is missing' );
@@ -111,7 +111,10 @@
 						$empty = false;
 						break;
 					}
-				} 
+				}
+
+				// Let it be empty forever since we use big buttons
+				$empty = false; 
 
 				if ( ! $empty ) {
 					if ( ! trim( $this->request->post['company']['name'] ) ) {
@@ -192,7 +195,12 @@
 			<![CDATA[
 <!-- Companies modification start -->
 <?php if ( $company_status ) : ?>
-<fieldset id="company">
+<div>
+	<button id="p-fiz" class="btn btn-default" type="button" style="width: calc( 50% - 3px ); height: 50px;">Persoană fizică</button>
+	<button id="p-comp" class="btn btn-default" type="button"  style="width: calc( 50% - 3px ); height: 50px;">Persoană juridică</button>
+	<input id="company-enabled" type="hidden" name="company[enabled]" value="0">
+</div>
+<fieldset id="company" style="display: none;">
 <legend><?php echo $adk->__( 'Company data' ); ?></legend>
 	<?php if ( $companies ) : ?>
 	<div class="radio">
@@ -354,8 +362,18 @@ $( '.company-existing' ).on( 'change', function() {
 		$( '#company-existing-false' ).hide();
 	}
 });
+
+$( "#p-fiz" ).on( "click", function(){
+	$( "fieldset#company" ).slideUp();
+	$( "#company-enabled" ).val( 0 );
+} );
+$( "#p-comp" ).on( "click", function(){
+	$( "fieldset#company" ).slideDown();
+	$( "#company-enabled" ).val( 1 );
+} );
+
 //--></script>
-<?php endif; ?><!-- Conpanies extension is enabled -->
+<?php endif; ?><!-- Companies extension is enabled -->
 <!-- Companies modification end -->
 
 			]]>
@@ -387,6 +405,39 @@ $( '.company-existing' ).on( 'change', function() {
 			if ( isset( $this->session->data['company_id'] ) ) {
 				$company = $adk->get_company_by_id( $this->session->data['company_id'] );
 				$data['formatted_company'] = $adk->format_company( $company );
+				$adk->add_custom_field( $this->session->data['order_id'], 'company', $this->session->data['company_id'], false );
+			}
+			]]></add>
+		</operation>
+	</file>
+
+	<file path="admin/controller/sale/order.php">
+		<operation description="company name to invoice">
+			<search><![CDATA[$this->response->setOutput($this->load->view('sale/order_invoice', $data));]]></search>
+			<add position="before"><![CDATA[
+			$model_path = ( version_compare( VERSION, '2.3.0.0', '>=') ? 'extension/' : '' ) . 'module/company';
+			$model_name = str_replace( '/', '_', $model_path );
+			$this->load->model( $model_path );
+			$c_model = $this->{"model_$model_name"};
+			$adk = \Advertikon\Company\Advertikon::instance();
+			$data['company_status'] = $adk->config( 'status' );
+			$data['company_text'] = $adk->__( 'Company details' );
+			if ( true ) {
+				$custom_d = $adk->get_custom_field( $this->request->get['order_id'], false );
+				$company_id = null;
+
+				if ( is_array( $custom_d ) && isset( $custom_d['company'] ) ) {
+					$company_id = $custom_d['company'];
+				}
+
+				if ( is_object( $custom_d ) && ! is_null( $custom_d->company ) ) {
+					$company_id = $custom_d->company;
+				}
+
+				if ( ! is_null( $company_id ) ) {
+					$company = $adk->get_company_by_id( $company_id );
+					$data['formatted_company'] = $adk->format_company( $company );
+				}
 			}
 			]]></add>
 		</operation>
@@ -396,6 +447,28 @@ $( '.company-existing' ).on( 'change', function() {
 		<operation description="company name to invoice">
 			<search><![CDATA[ <?php if ($comment) { ?>]]></search>
 			<add position="before"><![CDATA[
+			<?php if( $company_status && $formatted_company ) : ?>
+			  <table style="border-collapse: collapse; width: 100%; border-top: 1px solid #DDDDDD; border-left: 1px solid #DDDDDD; margin-bottom: 20px;">
+			    <thead>
+			      <tr>
+			        <td style="font-size: 12px; border-right: 1px solid #DDDDDD; border-bottom: 1px solid #DDDDDD; background-color: #EFEFEF; font-weight: bold; text-align: left; padding: 7px; color: #222222;"><?php echo $company_text; ?></td>
+			      </tr>
+			    </thead>
+			    <tbody>
+			      <tr>
+			        <td style="font-size: 12px;	border-right: 1px solid #DDDDDD; border-bottom: 1px solid #DDDDDD; text-align: left; padding: 7px;"><?php echo $formatted_company; ?></td>
+			      </tr>
+			    </tbody>
+			  </table>
+			<?php endif; ?>
+			]]></add>
+		</operation>
+	</file>
+
+	<file path="admin/view/template/sale/order_invoice.tpl">
+		<operation description="company name to invoice">
+			<search index="2"><![CDATA[<table class="table table-bordered">]]></search>
+			<add position="before" offset="2"><![CDATA[
 			<?php if( $company_status && $formatted_company ) : ?>
 			  <table style="border-collapse: collapse; width: 100%; border-top: 1px solid #DDDDDD; border-left: 1px solid #DDDDDD; margin-bottom: 20px;">
 			    <thead>

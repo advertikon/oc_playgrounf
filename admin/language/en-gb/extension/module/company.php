@@ -1,5 +1,5 @@
 <?php
-$_['heading_title'] = '<i class="fa fa-pie-chart fa-2x" style="color: #2196F3"></i> <b>Companies</b>';
+$_['heading_title'] = '<i class="fa fa-pie-chart fa-2x" style="color: #2196F3"></i> <b>Invoice options</b>';
 $_[' '] = ' ';
 $_['Add new company'] = 'Add new company';
 $_['Address line 1'] = 'Address line 1';
