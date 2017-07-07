@@ -39,3 +39,4 @@ image.tar
 #image/catalog/
 
 .crawler
+.tpm_pckg/
