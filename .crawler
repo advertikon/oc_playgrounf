@@ -1,6 +1,6 @@
 include_regexp:
  - company\b
-code : solvo_invoice_option
+code : company
 major : 0
 minor : 0
-patch : 9
+patch : 11
