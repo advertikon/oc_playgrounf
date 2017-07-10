@@ -4,9 +4,6 @@
  *
  * @package Stock distribution
  * @version 0.0.7
- * 
- * @source admin/view/javascript/advertikon/advertikon.js
- * @source admin/view/stylesheet/advertikon/advertikon.css
  */
 
 class ControllerExtensionModuleCompany extends Controller {
