@@ -6,9 +6,6 @@
  * @version 0.0.7
  * 
  * @source admin/view/javascript/advertikon/advertikon.js
- * @#source admin/view/javascript/advertikon/company/*
- * 
- * @#source admin/view/stylesheet/advertikon/company/*
  * @source admin/view/stylesheet/advertikon/advertikon.css
  */
 
