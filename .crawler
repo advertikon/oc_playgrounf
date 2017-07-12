@@ -3,4 +3,4 @@ include_regexp:
 code : company
 major : 0
 minor : 0
-patch : 32
+patch : 79
