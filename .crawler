@@ -1,0 +1,6 @@
+include_regexp:
+ - advertikon_stripe
+code : advertikon_stripe
+major : 2
+minor : 8
+patch : 14

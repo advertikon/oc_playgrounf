@@ -2,7 +2,7 @@
 admin/config.php
 #system/config/
 .idea/
-
+~
 !index.html
 
 download/

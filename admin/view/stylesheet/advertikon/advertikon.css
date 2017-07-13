@@ -48,7 +48,8 @@
 	background-color: #c0cfdc;
 	-webkit-transition: all .2s;
 	transition: all .2s;
-	box-shadow: inset 3px 2px 2px #3a6f41, inset 4px 4px 4px white, inset -2px -2px 4px black, inset -3px -3px 2px white;
+	-webkit-box-shadow: inset 3px 2px 2px #3a6f41, inset 4px 4px 4px white, inset -2px -2px 4px black, inset -3px -3px 2px white;
+	        box-shadow: inset 3px 2px 2px #3a6f41, inset 4px 4px 4px white, inset -2px -2px 4px black, inset -3px -3px 2px white;
 }
 .fc-middle.on {
 	background-color: #609e5c;
@@ -60,43 +61,51 @@
 @-webkit-keyframes fc-switched-on {
 	0%,
 	100% {
-		box-shadow: none;
+		-webkit-box-shadow: none;
+		        box-shadow: none;
 	}
 
 	50% {
-		box-shadow: 0 0 5px 2px #33843e;
+		-webkit-box-shadow: 0 0 5px 2px #33843e;
+		        box-shadow: 0 0 5px 2px #33843e;
 	}
 }
 @keyframes fc-switched-on {
 	0%,
 	100% {
-		box-shadow: none;
+		-webkit-box-shadow: none;
+		        box-shadow: none;
 	}
 
 	50% {
-		box-shadow: 0 0 5px 2px #33843e;
+		-webkit-box-shadow: 0 0 5px 2px #33843e;
+		        box-shadow: 0 0 5px 2px #33843e;
 	}
 }
 
 @-webkit-keyframes fc-switched-off {
 	0%,
 	100% {
-		box-shadow: none;
+		-webkit-box-shadow: none;
+		        box-shadow: none;
 	}
 
 	50% {
-		box-shadow: 0 0 5px 2px #60636f;
+		-webkit-box-shadow: 0 0 5px 2px #60636f;
+		        box-shadow: 0 0 5px 2px #60636f;
 	}
 }
 
 @keyframes fc-switched-off {
 	0%,
 	100% {
-		box-shadow: none;
+		-webkit-box-shadow: none;
+		        box-shadow: none;
 	}
 
 	50% {
-		box-shadow: 0 0 5px 2px #60636f;
+		-webkit-box-shadow: 0 0 5px 2px #60636f;
+		        box-shadow: 0 0 5px 2px #60636f;
 	}
 }
 
@@ -287,7 +296,10 @@
 	position: absolute;
 	z-index: 999;
 	-webkit-transition-property: left, top, width, height, box-shadow;
+	-webkit-transition-property: left, top, width, height, -webkit-box-shadow;
+	transition-property: left, top, width, height, -webkit-box-shadow;
 	transition-property: left, top, width, height, box-shadow;
+	transition-property: left, top, width, height, box-shadow, -webkit-box-shadow;
 	-webkit-transition-duration: 1s;
 	        transition-duration: 1s;
 	-webkit-transition-timing-function: ease;
@@ -336,6 +348,17 @@
     padding: 10px;
     max-width: 600px;
     overflow: hidden;
+}
+
+.notification-body > div {
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-align: center;
+	-webkit-align-items: center;
+	    -ms-flex-align: center;
+	        align-items: center;
 }
 
 .notification-alert {

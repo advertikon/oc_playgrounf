@@ -307,12 +307,11 @@ class Advertikon extends \Advertikon\Advertikon {
 	 * @throws Stripe\Error\Base
 	 */
 	public function customer_lookup( $card, $customer ) {
-
 		$duplicated_customer = array();
 
 		if ( ! $card->fingerprint ) {
 			$this->log(
-				'Customer lookup: searched card fingerprint is missing. Stop lookup',
+				'Customer lookup: fingerprint of searched card is missing. Abort lookup',
 				$this->log_debug_flag
 			);
 
@@ -321,7 +320,7 @@ class Advertikon extends \Advertikon\Advertikon {
 
 		if ( ! $customer->email ) {
 			$this->log(
-				'Customer lookup: searched customer email is missing. Stop lookup',
+				'Customer lookup: email of searched customer is missing. Abort lookup',
 				$this->log_debug_flag
 			);
 
@@ -330,7 +329,7 @@ class Advertikon extends \Advertikon\Advertikon {
 
 		if ( ! $customer->id ) {
 			$this->log(
-				'Customer lookup: searched customer id is missing. Stop lookup',
+				'Customer lookup: id of searched customer is missing. Abort lookup',
 				$this->log_debug_flag
 			);
 
@@ -347,7 +346,7 @@ class Advertikon extends \Advertikon\Advertikon {
 					$duplicated_customer[] = $old_customer;
 	    			$this->log(
 	    				sprintf(
-	    					'Customer lookup: duplicated customer with ID#%s found',
+	    					'Customer lookup: found duplicated customer with ID#%s',
 	    					$old_customer->id
 	    				),
 	    				$this->log_debug_flag
@@ -1989,12 +1988,11 @@ class Advertikon extends \Advertikon\Advertikon {
 	 * @throws Stripe\Error\Base
 	 */
 	public function delete_api_customer( $customer ) {
-
 		if ( is_string( $customer ) ) {
 			$customer = $this->fetch_api_customer( $customer );
 
 		} elseif ( ! is_a( $customer, '\Stripe\Customer' ) ) {
-			$this->__( 'Customer need to be instance of "Stripe\Customer" or string Customer ID. "%s" given instead',
+			$this->__( 'Customer need to be an instance of "Stripe\Customer" or string Customer ID. "%s" given instead',
 				is_object( $customer ) ? get_class( $customer ) : gettype( $customer )
 			);
 
@@ -2006,6 +2004,8 @@ class Advertikon extends \Advertikon\Advertikon {
 		$this->cache->delete( $customer->id );
 
 		$this->log( sprintf( 'Customer "%s" was deleted', $customer->id ) );
+
+		return true;
 	}
 
 	/**

@@ -1,6 +1,7 @@
 <?php
 // Error Reporting
 error_reporting(E_ALL);
+ini_set( "display_errors", 1 );
 
 // Check Version
 if (version_compare(phpversion(), '5.4.0', '<') == true) {

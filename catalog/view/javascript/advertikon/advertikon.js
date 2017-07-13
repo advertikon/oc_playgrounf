@@ -2410,6 +2410,14 @@
 			.test( navigator.userAgent );
 	};
 
+	/**
+	 * Detects if user agent is Apple
+	 * @returns {boolean} True if Apple
+	 */
+	ADK.isApple = function ia() {
+		return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+	}
+
 	$.fn.scrollTo = function st( data ) {
 		var
 			animationStep = 10,

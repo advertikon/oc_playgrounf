@@ -83,4 +83,17 @@ class Option extends \Advertikon\Option {
 		);
 	}
 
+	/**
+	 * Returns list of available appearances of payment card number input field 
+	 * @return array
+	 */
+	public function get_input_appearance() {
+		return array(
+			'formated'     => ADK( __NAMESPACE__ )->__( 'Formatted' ),
+			'plain'        => ADK( __NAMESPACE__ )->__( 'Plain' ),
+			'plain_mobile' => ADK( __NAMESPACE__ )->__( 'Plain if mobile' ),
+			'plain_apple'  => ADK( __NAMESPACE__ )->__( 'Plain if Apple' ),
+		);
+	}
+
 }

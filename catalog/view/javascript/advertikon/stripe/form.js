@@ -193,6 +193,15 @@
 
 			return false;
 		} );
+console.log( 
+	'plain if mobile: ' + ADK.locale.plainIfMobile,
+	'is mobile: ' + ADK.isMobile(),
+	'plain if apple: ' + ADK.locale.plainIfApple,
+	'apple: ' + ADK.isApple()
+	);
+		if ( ( ADK.locale.plainIfMobile && ADK.isMobile() ) || ( ADK.locale.plainIfApple && ADK.isApple() ) ) {
+			$( ".cc-field-switch" ).click();
+		}
 
 		avail_systems = ADK.locale.availSystems;
 

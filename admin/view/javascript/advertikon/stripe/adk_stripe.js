@@ -206,6 +206,9 @@
 
 				ADK.e.trigger( "profile.paginated" );
 
+			} else if ( rest.substr( -5 ) === "error" ) {
+				ADK.a.alert( resp.slice( 0, -5 ) );
+
 			} else {
 				$pane.find( ".loader .msg" ).text( ADK.locale.errorCantProfilesList );
 			}
@@ -312,6 +315,9 @@
 			if( resp.substr( -7 ) === "success" ) {
 				$( "#tab-plans" ).append( $( resp.slice( 0, -7 ) ) );
 				ADK.e.trigger( "plans.fetched" );
+
+			} else if ( resp.substr( -5 ) === "error" ) {
+				ADK.n.alert( resp.slice( 0, -5 ) );
 
 			} else {
 				ADK.n.alert( ADK.locale.plansError );

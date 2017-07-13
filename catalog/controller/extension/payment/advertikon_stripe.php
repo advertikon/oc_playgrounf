@@ -3,7 +3,7 @@
  * Catalog Advertikon Stripe Controller
  * @author Advertikon
  * @package Stripe
- * @version 2.8.11
+ * @version 2.8.11    
  * 
  * @source catalog/view/theme/default/stylesheet/advertikon/stripe/*
  * @source catalog/view/theme/default/stylesheet/advertikon/advertikon.css
@@ -155,6 +155,8 @@ class ControllerExtensionPaymentAdvertikonStripe extends Controller {
 			'compatibilityButtonText' => $this->a->caption( 'compatibility_button_text' ),
 			'secretNeededSave'     => $this->a->caption( 'caption_error_card_password_save' ),
 			'secretNeededUse'      => $this->a->caption( 'caption_error_card_password_use' ),
+			'plainIfMobile'        => 'plain_mobile' === $this->a->config( 'pc_number_input' ),
+			'plainIfApple'         => 'plain_apple' === $this->a->config( 'pc_number_input' ),
 		);
 
 		$saved_cards = array();
@@ -182,6 +184,12 @@ class ControllerExtensionPaymentAdvertikonStripe extends Controller {
 		$data['saved_cards'] = $saved_cards;
 
 		$vendors = $this->a->config( 'avail_systems' );
+
+		// Skip 'all methods' option
+		for( $i = 0; $i < count( $vendors ); $i++ ) {
+			if ( $vendors[ $i ] === '0' ) unset( $vendors[ $i ] );
+		}
+
 		$icon_width = floor( 100 / count( $vendors ) );
 		$vendor_max_width = $this->a->config( 'vendor_image_form_width' );
 		$data['vendors_tab'] = '';

@@ -165,6 +165,12 @@ class ModelExtensionPaymentAdvertikonStripe extends Model {
 
 		if( $this->a->config( 'show_systems' ) && ( $systems = $this->a->config( 'avail_systems' ) ) ) {
 			foreach( (array)$systems as $system ) {
+
+				// All systems option
+				if ( '0' === $system ) {
+					continue;
+				}
+
 				$terms .= '<img src="' . $this->a->get_brand_image( $system ) . '" style="height: 25px!important; width: auto!important;">';
 			}
 
@@ -388,13 +394,13 @@ class ModelExtensionPaymentAdvertikonStripe extends Model {
 
 		// Do not save credit card in Stripe
 		if ( ! $this->store_card_data() ) {
-			$this->a->log( 'No need to store CC in Stripe Dashboard. Stop validation', $this->a->log_debug_flag );
+			$this->a->log( 'No need to save customer. Stop validation', $this->a->log_debug_flag );
 			$return->token = $token;
 
 			return $return;
 		}
 
-		$this->a->log( 'Credit card\'s data need to be stored at Stripe Dashboard', $this->a->log_debug_flag );
+		$this->a->log( 'Customer need to be saved at Stripe Dashboard', $this->a->log_debug_flag );
 		$oc_stripe_customer = new Advertikon\Stripe\Resource\Customer( false );
 
 		// Flag to create new customer
@@ -482,7 +488,7 @@ class ModelExtensionPaymentAdvertikonStripe extends Model {
 		// if we don't have this customer in Stripe - create new Stripe customer
 		// obtain stripeApiCard object, stripeApiCustomer object
 		if ( $need_to_create_new_customer ) {
-			$this->a->log( 'Customer does not exist at Stripe Dashboard', $this->log_debug_flag );
+			$this->a->log( 'Customer does not exist in Stripe Dashboard', $this->log_debug_flag );
 
 			$shortcode = new Advertikon\Stripe\Shortcode();
 
@@ -504,7 +510,7 @@ class ModelExtensionPaymentAdvertikonStripe extends Model {
 	    	 * delete newly created customer and it's card,
 	    	 */
 	    	if ( $this->a->config( 'check_customer_duplication' ) ) {
-	    		$this->a->log( 'Customer lookup will be performed', $this->a->log_debug_flag );
+	    		$this->a->log( 'Customer duplication lookup....', $this->a->log_debug_flag );
 
 	    		$old_customer = $this->a->customer_lookup( $stripe_api_card, $stripe_api_customer );
 
@@ -515,16 +521,16 @@ class ModelExtensionPaymentAdvertikonStripe extends Model {
 	    			if ( $this->a->delete_api_customer( $stripe_api_customer, true ) ) {
 
 	    				$this->a->log( sprintf(
-	    					'Customer with ID#%s was substituted by already existing customer instance with ID#%s',
+	    					'Customer with ID#%s was substituted by an already existing with ID#%s',
 	    					$stripe_api_customer->id,
 	    					$old_customer->id
 	    				), $this->a->log_debug_flag );
 
 	    				$stripe_api_customer = $old_customer;
 	    				$deleted_card_id = $stripe_api_card->id;
-	    				$stripe_api_card = $this->a->fetch_api_card( $stripe_api_customer, $stripe_api_card->id );
+	    				$stripe_api_card = $this->a->fetch_api_card( $stripe_api_customer );
 
-	    				$this->log( sprintf(
+	    				$this->a->log( sprintf(
 	    					'Card with ID#%s was substituted by already existing card instance with ID#%s',
 	    					$deleted_card_id,
 	    					$stripe_api_card->id

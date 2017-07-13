@@ -67,7 +67,7 @@
 			</div>
 		</div>
 	<?php endif; ?>
-		<div class="adk-form-group cc-number-cover formatted-view">
+		<div class="adk-form-group cc-number-cover <?php echo ( 'plain' !== $a->config( 'pc_number_input' ) ? 'formatted-view' : '' ); ?>" >
 			<label class="adk-col-30 adk-label" for='cc-number'>
 				<?php echo $a->caption( 'caption_form_card_nmber' ); ?>
 			</label>

@@ -4,7 +4,7 @@
  *
  * @author Advertikon
  * @package Stripe
- * @version 2.8.11
+ * @version 2.8.11   
  * 
  * @source admin/view/javascript/advertikon/jquery-ui.min.js
  * @source admin/view/javascript/advertikon/iris.min.js
@@ -48,7 +48,7 @@
  * @source system/library/advertikon/terminalColors.php
  * @source system/library/advertikon/url.php
  * @source system/library/advertikon/console.php
- * @source system/library/stripe/*
+ * @source system/library/advertikon/stripe/*
  */
 
 class ControllerExtensionPaymentAdvertikonStripe extends Controller {
@@ -1912,6 +1912,23 @@ class ControllerExtensionPaymentAdvertikonStripe extends Controller {
 				$resp['input_errors'][ $name ] : null,
 		) );
 
+		$name = 'pc_number_input';
+		$data[ $name ] = $this->a->r()->render_form_group( array(
+			'label'     => $this->a->__( 'Card number input' ),
+			'label_for' => 'input-' . $name,
+			'tooltip'   => $this->a->__( 'Choose how payment card number input field should look like' ),
+			'element'   => array(
+				'type'        => 'select',
+				'name'        => $name,
+				'class'       => 'form-control',
+				'active'      => $this->a->get_value_from_post( $name ),
+				'value'       => $option->input_appearance(),
+				'id'          => 'input-' . $name,
+			),
+			'error'      => isset( $resp['input_errors'][ $name ] ) ?
+				$resp['input_errors'][ $name ] : null,
+		) );
+
 		$shortcode = new Advertikon\Shortcode();
 
 		$data['locale'] = json_encode( array(
@@ -2296,10 +2313,10 @@ HTML;
 			$ret = $this->get_plans_table( $page ) . 'success';
 
 		} catch ( Stripe\Error\Base $e ) {
-			$ret = $e->getMessage();
+			$ret = $e->getMessage() . 'error';
 
 		} catch ( Advertikon\Exception $e ) {
-			$ret = $e->getMessage();
+			$ret = $e->getMessage() . 'error';
 		}
 
 		$this->response->setOutput( $ret );

@@ -286,6 +286,7 @@
 								echo $edit_cards;
 								echo $log_activity;
 								echo $check_customer_duplication;
+								echo $pc_number_input;
 							?>	
 
 						</div>

@@ -36,7 +36,8 @@
 
 .sp-payment div,
 .sp-payment input {
-	box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	        box-sizing: border-box;
 	margin-right: 0;
 	margin-left: 0;
 }
@@ -160,7 +161,8 @@
 	border-radius: 7%;
 	-webkit-backface-visibility: hidden;
 	   backface-visibility: hidden;
-	  box-sizing: border-box;
+	  -webkit-box-sizing: border-box;
+	          box-sizing: border-box;
 }
 .sp-container .sp-card .sp-code,
 .sp-container .sp-card .sp-expire,
@@ -314,12 +316,15 @@
 .simple-input {
 	display: block;
 	text-align: center;
+	font-weight: bold;
+	letter-spacing: 10px;
 }
 
 .formatted-input {
 	display: none;
 	padding-right: 25px;
 	padding-bottom: 7px;
+	max-height: 37px;
 }
 
 .formatted-view .simple-input {
@@ -389,7 +394,8 @@
     color: #fff;
     background-color: #45b1e8;
     border: none;
-    box-shadow: 1px 1px 10px #000, inset 2px 2px 3px #0a60c1, inset 4px 4px 4px #fff;
+    -webkit-box-shadow: 1px 1px 10px #000, inset 2px 2px 3px #0a60c1, inset 4px 4px 4px #fff;
+            box-shadow: 1px 1px 10px #000, inset 2px 2px 3px #0a60c1, inset 4px 4px 4px #fff;
     font-size: 150%;
     position: relative;
     -webkit-transition: top 0.3s cubic-bezier(0.07, 0.6, 0.84, 1.18);
