@@ -3,9 +3,7 @@
  * Advertikon Stripe Class
  * @author Advertikon
  * @package Advertikon
- * @version 2.8.11
- * 
- * @depend ../advertikon.php
+ * @version 2.8.11  
  */
 
 namespace Advertikon\Stripe;
