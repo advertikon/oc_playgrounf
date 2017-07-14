@@ -13,6 +13,7 @@ for f in \
 	admin/view/javascript/advertikon/$short_code \
 	admin/view/stylesheet/advertikon/$short_code \
 	admin/view/template/extension/$type/advertikon/$shoer_code* \
+	admin/view/image/payment/$code* \
 	admin/controller/extension/$type/$code.php \
 	admin/model/extension/$type/$code.php \
 	admin/language/en-gb/extension/$type/$code.php \
