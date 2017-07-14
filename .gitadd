@@ -1,0 +1,24 @@
+#!/bin/bash
+
+code=lenses
+short_code=lenses
+type=module
+
+echo $code
+echo $short_code
+echo $type
+
+for f in \
+	system/library/advertikon/$short_code/ \
+	admin/view/javascript/advertikon/$short_code \
+	admin/view/stylesheet/advertikon/$short_code \
+	admin/controller/extension/$type/$code.php \
+	admin/model/extension/$type/$code.php \
+	admin/language/en-gb/extension/$type/$code.php \
+	catalog/controller/extension/$type/$code.php \
+	catalog/model/extension/$type/$code.php \
+	system/$code.ocmod.xml
+
+do
+	git add -f $f
+done

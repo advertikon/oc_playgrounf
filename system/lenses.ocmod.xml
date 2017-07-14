@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+	<name>XXXXXX</name>
+	<code>xxxx</code>
+	<version>1.0</version>
+	<author>Advertikon</author>
+	<link>http://www.advertikon.com.ua</link>
+	
+	<file path="system/engine/front.php">
+		<operation>
+			<ignoreif>
+				<![CDATA[$adk_registry = $registry;]]>
+			</ignoreif>
+			<search>
+				<![CDATA[$this->registry = $registry;]]>
+			</search>
+			<add position="after">
+				<![CDATA[global $adk_registry; $adk_registry = $registry;]]>
+			</add>
+		</operation>
+	</file>
+
+</modification>
