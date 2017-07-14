@@ -1,4 +1,0 @@
-QUnit.module( "Catalog" );
-
-
-
