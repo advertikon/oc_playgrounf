@@ -22,7 +22,8 @@ for f in \
 	catalog/view/javascript/advertikon/$short_code/ \
 	catalog/view/theme/default/stylesheet/advertikon/$shoert_code/ \
 	catalog/view/theme/default/template/extension/payment/advertikon/$short_code/ \
-	image/advertikon/$short_code/
+	image/advertikon/$short_code/ \
+	system/$code.ocmod.xml
 
 do
 	git add -f $f
