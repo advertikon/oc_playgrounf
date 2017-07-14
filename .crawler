@@ -1,6 +1,0 @@
-include_regexp:
- - company\b
-code : company
-major : 0
-minor : 0
-patch : 79

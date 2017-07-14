@@ -1,0 +1,23 @@
+#!/bin/bash
+
+code=company
+short_code=company
+type=module
+
+echo $code
+echo $short_code
+echo $type
+
+for f in \
+	system/library/advertikon/$short_code/ \
+	admin/view/template/extension/$type/advertikon/$shoer_code* \
+	admin/controller/extension/$type/$code.php \
+	admin/model/extension/$type/$code.php \
+	admin/language/en-gb/extension/$type/$code.php \
+	catalog/controller/extension/$type/$code.php \
+	catalog/language/en-gb/extension/$type/$code.php \
+	catalog/model/extension/$type/$code.php \
+	catalog/view/theme/default/template/extension/$type/advertikon/$short_code/
+do
+	git add -f $f
+done
