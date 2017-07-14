@@ -42,3 +42,6 @@ image.tar
 .tpm_pckg/
 
 system/library/advertikon/
+system/library/stripe/
+admin/view/image/payment/advertikon*
+admin/view/template/extension/payment/advertikon*
