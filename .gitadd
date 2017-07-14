@@ -10,14 +10,15 @@ echo $type
 
 for f in \
 	system/library/advertikon/$short_code/ \
-	admin/view/template/extension/$type/advertikon/$shoer_code* \
+	admin/view/template/extension/$type/$shoer_code* \
 	admin/controller/extension/$type/$code.php \
 	admin/model/extension/$type/$code.php \
 	admin/language/en-gb/extension/$type/$code.php \
 	catalog/controller/extension/$type/$code.php \
 	catalog/language/en-gb/extension/$type/$code.php \
 	catalog/model/extension/$type/$code.php \
-	catalog/view/theme/default/template/extension/$type/advertikon/$short_code/
+	catalog/view/theme/default/template/extension/$type/$short_code/ \
+	system/$code.ocmod.xml
 do
 	git add -f $f
 done

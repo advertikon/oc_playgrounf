@@ -1,0 +1,513 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+	<name>Invoice Options</name>
+	<code>invoice_option</code>
+	<version>1.0.0</version>
+	<author></author>
+	<link></link>
+	<file path="system/engine/front.php">
+		<operation>
+			<ignoreif>
+				<![CDATA[$adk_registry = $registry;]]>
+			</ignoreif>
+			<search>
+				<![CDATA[$this->registry = $registry;]]>
+			</search>
+			<add position="after">
+				<![CDATA[global $adk_registry; $adk_registry = $registry;]]>
+			</add>
+		</operation>
+	</file>
+
+	<file path="catalog/controller/checkout/payment_address.php">
+		<operation description="fetch existing address">
+			<search>
+				<![CDATA[$data['custom_fields'] = $this->model_account_custom_field->getCustomFields($this->config->get('config_customer_group_id'));]]>
+			</search>
+			<add position="after">
+				<![CDATA[
+		/* Companies modification start */
+
+		$model_path = ( version_compare( VERSION, '2.3.0.0', '>=') ? 'extension/' : '' ) . 'module/company';
+		$model_name = str_replace( '/', '_', $model_path );
+		$this->load->model( $model_path );
+		$c_model = $this->{"model_$model_name"};
+		$adk = \Advertikon\Company\Advertikon::instance();
+		$company = array();
+
+		if ( $adk->config( "status" ) ) {
+			if ( isset( $this->session->data['company_id'] ) ) {
+				$company = $adk->get_company_by_id( $this->session->data['company_id'] );
+
+				if ( ! $company ) {
+					unset( $this->session->data['company_id'] );
+				}
+			}
+
+			$data['company_name'] = isset( $company['name'] ) ? $company['name'] : '';
+			$data['company_vat'] = isset( $company['name'] ) ? $company['vat_no'] : '';
+			$data['company_reg'] = isset( $company['name'] ) ? $company['reg_no'] : '';
+			$data['company_representative'] = isset( $company['representative'] ) ? $company['representative'] : '';
+			$data['company_address'] = isset( $company['address_line_1'] ) ? $company['address_line_1'] : '';
+			$data['company_zone_id'] = isset( $company['zone_id'] ) ? $company['zone_id'] : '';
+			$data['company_country_id'] = isset( $company['country_id'] ) ? $company['country_id'] : '';
+			$data['company_city'] = isset( $company['city'] ) ? $company['city'] : '';
+			$data['company_bank'] = isset( $company['bank'] ) ? $company['bank'] : '';
+			$data['company_iban'] = isset( $company['iban'] ) ? $company['iban'] : '';
+			$data['company_phone'] = isset( $company['phone'] ) ? $company['phone'] : '';
+
+			if ( $this->customer->isLogged() ){
+				$data['companies'] = $adk->get_companies_by_customer( $this->customer->getId() );
+
+			} else {
+				$data['companies'] = array();
+			}
+
+			$data['company_status'] = $adk->config( 'status' );
+			$data['company_id'] = null;
+			$data['cm'] = $c_model;
+			$data['adk'] = $adk;
+		}
+		/* Companies modification end */
+				]]>
+			</add>
+		</operation>
+
+		<operation description="save address">
+			<search><![CDATA[if (isset($this->request->post['payment_address']) && $this->request->post['payment_address'] == 'existing') {]]></search>
+			<add position="before"><![CDATA[
+		/* Companies modification start */
+		$model_path = ( version_compare( VERSION, '2.3.0.0', '>=') ? 'extension/' : '' ) . 'module/company';
+		$model_name = str_replace( '/', '_', $model_path );
+		$this->load->model( $model_path );
+		$c_model = $this->{"model_$model_name"};
+		$adk = \Advertikon\Company\Advertikon::instance();
+
+		if ( $adk->config( "status" ) && ! empty( $this->request->post['company']['enabled'] ) ) {
+			if ( isset( $this->request->post['company']['existing'] ) && $this->request->post['company']['existing'] == 'true') {
+				if ( empty( $this->request->post['company']['id'] ) ) {
+					$json['error']['warning'] = $adk->__( 'Company ID is missing' );
+
+				} else {
+					$company = $adk->get_company_by_id( $this->request->post['company']['id'] );
+
+					if ( ! $company ) {
+						$json['error']['warning'] = $adk->__( 'Company doesn\'t exist' );
+					}
+
+					$this->session->data['company_id'] = $company['id'];
+					$this->session->data['company_code'] = $company['reg_no'];
+				}
+
+			} else {
+				$empty = true;
+
+				foreach( $adk->post( 'company', array() ) as $n => $v ) {
+					if ( in_array( $n, array( 'existing', 'zone', 'country', 'id', )  ) ) {
+						continue;
+					}
+
+					if ( ! empty( $v ) ) {
+						$empty = false;
+						break;
+					}
+				}
+
+				// Let it be empty forever since we use big buttons
+				$empty = false; 
+
+				if ( ! $empty ) {
+					if ( ! trim( $this->request->post['company']['name'] ) ) {
+						$json['error']['company_name'] = $adk->__( 'Company name is required' );
+					}
+
+					if ( ! trim( $this->request->post['company']['vat'] ) ) {
+						$json['error']['company_vat'] =  $adk->__( 'Company VAT number is required' );
+					}
+
+					if ( ! trim( $this->request->post['company']['reg'] ) ) {
+						$json['error']['company_reg'] =  $adk->__( 'Company registration number is required' );
+					}
+
+					if ( ! trim( $this->request->post['company']['representative'] ) ) {
+						$json['error']['company_representative'] =  $adk->__( 'Company legal representative is required' );
+					}
+
+					if ( ! trim( $this->request->post['company']['address'] ) ) {
+						$json['error']['company_address'] =  $adk->__( 'Company address is required' );
+					}
+
+					if ( ! trim( $this->request->post['company']['city'] ) ) {
+						$json['error']['company_city'] =  $adk->__( 'City name is required' );
+					}
+
+					if ( $this->request->post['company']['country'] === '' ) {
+						$json['error']['company_country'] =  $adk->__( 'Cuntry is required' );
+					}
+
+					if (
+						! isset( $this->request->post['company']['zone'] ) ||
+						$this->request->post['company']['zone'] == '' ||
+						! is_numeric($this->request->post['company']['zone'] )
+					) {
+						$json['error']['company_zone'] = $adk->__( 'Country zone is required' );
+					}
+
+					if ( ! trim( $this->request->post['company']['bank'] ) ) {
+						$json['error']['company_bank'] = $adk->__( 'Bank name name is required' );
+					}
+
+					if ( ! trim( $this->request->post['company']['iban'] ) ) {
+						$json['error']['company_iban'] = $adk->__( 'Bank account is required' );
+					}
+
+					if ( ! trim( $this->request->post['company']['phone'] ) ) {
+						$json['error']['company_phone'] = $adk->__( 'Phone number is required' );
+					}
+
+					if ( ! $json ) {
+						if ( isset( $this->session->data['company_id'] ) )  {
+
+							// To update rather than create new
+							$this->request->post['company']['id'] = $this->session->data['company_id'];
+						}
+
+						if ( false === $company_id = $adk->save_company( $this->request->post['company'], $this->customer->getId() ) ) {
+							$json['error']['warning'] = $adk->__( 'Failed to save company details' );
+
+						} else {
+							$this->session->data['company_id'] = $company_id;
+							$this->session->data['company_code'] = $this->request->post['reg'];
+						}
+					}
+				}
+			}
+		}
+		/* Companies modification end */
+			]]></add>
+		</operation>
+	</file>
+
+	<file path="catalog/view/theme/*/template/checkout/payment_address.tpl">
+		<operation description="fetch existiong address">
+			<search regex="false"><![CDATA[<div class="buttons clearfix">]]></search>
+			<add position="before">
+			<![CDATA[
+<!-- Companies modification start -->
+<?php if ( $company_status ) : ?>
+<div>
+	<button id="p-fiz" class="btn btn-default" type="button" style="width: calc( 50% - 3px ); height: 50px;">Persoană fizică</button>
+	<button id="p-comp" class="btn btn-default" type="button"  style="width: calc( 50% - 3px ); height: 50px;">Persoană juridică</button>
+	<input id="company-enabled" type="hidden" name="company[enabled]" value="0">
+</div>
+<fieldset id="company" style="display: none;">
+<legend><?php echo $adk->__( 'Company data' ); ?></legend>
+	<?php if ( $companies ) : ?>
+	<div class="radio">
+		<label>
+			<input type="radio" name="company[existing]" value="true" checked="true" class="company-existing">
+			<?php echo $adk->__( 'Use existing company' ); ?>
+		</label>
+	</div>
+	<div id="company-existing-true" >
+		<select name="company[id]" class="form-control">
+			<?php foreach ( $companies as $company ) : ?>
+				<?php if ( $company['id'] == $company_id) : ?>
+				<option value="<?php echo $company['id']; ?>" selected="selected">
+					<?php echo $company['name']; ?> <?php echo $company['reg_no']; ?>
+				</option>
+				<?php else: ?>
+				<option value="<?php echo $company['id']; ?>">
+					<?php echo $company['name']; ?> <?php echo $company['reg_no']; ?>
+				</option>
+				<?php endif; ?>
+			<?php endforeach; ?>
+		</select>
+	</div>
+	<div class="radio">
+		<label>
+			<input type="radio" class="company-existing company-existing-false" name="company[existing]" value="false" />
+			<?php echo $adk->__( 'Add new company' ); ?>
+		</label>
+	</div>
+	<?php endif; ?> <!-- Company exists -->
+<br>
+	<div id="company-existing-false" style="display: <?php echo ( $companies ? 'none' : 'block'); ?>;">
+		<div class="form-group requiredd">
+			<label class="col-sm-2 control-label" for="input-payment-company-name"><?php echo $adk->__( 'Company name' ); ?></label>
+			<div class="col-sm-10">
+				<input type="text" name="company[name]" value="<?php echo $company_name; ?>" placeholder="<?php echo $adk->__( 'Specify company name' ); ?>" id="input-payment-company-name" class="form-control">
+			</div>
+		</div>
+		<div class="form-group requiredd">
+			<label class="col-sm-2 control-label" for="input-compant-vat"><?php echo $adk->__( 'VAT number' ); ?></label>
+			<div class="col-sm-10">
+				<input type="text" name="company[vat]" value="<?php echo $company_vat; ?>" placeholder="<?php echo $adk->__( 'Companies\' VAT number' ); ?>" id="input-payment-company-vat" class="form-control">
+			</div>
+		</div>
+		<div class="form-group requiredd">
+			<label class="col-sm-2 control-label" for="input-payment-company-reg"><?php echo $adk->__( 'Reg. number' ); ?></label>
+				<div class="col-sm-10">
+				<input type="text" name="company[reg]" value="<?php echo $company_reg; ?>" placeholder="<?php echo $adk->__( 'Company registration number' ); ?>" id="input-payment-company-reg" class="form-control">
+			</div>
+		</div>
+		<div class="form-group requiredd">
+			<label class="col-sm-2 control-label" for="input-payment-company-representative"><?php echo $adk->__( 'Representative' ); ?></label>
+			<div class="col-sm-10">
+				<input type="text" name="company[representative]" value="<?php echo $company_representative; ?>" placeholder="<?php echo $adk->__( 'Company legal representative' ); ?>" id="input-payment-company-representative" class="form-control">
+			</div>
+		</div>
+		<div class="form-group requiredd">
+			<label class="col-sm-2 control-label" for="input-payment-company-address"><?php echo $adk->__( 'Street' ); ?></label>
+			<div class="col-sm-10">
+				<input type="text" name="company[address]" value="<?php echo $company_address; ?>" placeholder="<?php echo $adk->__( 'Address line 1' ); ?>" id="input-payment-company-address" class="form-control">
+			</div>
+		</div>
+		<div class="form-group requiredd">
+			<label class="col-sm-2 control-label" for="input-payment-company-city"><?php echo $adk->__( 'City' ); ?></label>
+			<div class="col-sm-10">
+				<input type="text" name="company[city]" value="<?php echo $company_city; ?>" placeholder="<?php echo $adk->__( 'City' ); ?>" id="input-payment-company-city" class="form-control">
+			</div>
+		</div>
+		<div class="form-group requiredd">
+			<label class="col-sm-2 control-label" for="input-payment-company-country"><?php echo $adk->__( 'Country' ); ?></label>
+			<div class="col-sm-10">
+				<select name="company[country]" id="input-payment-company-country" class="form-control">
+					<option value=""><?php echo  $text_select;; ?></option>
+					<?php foreach ( $countries as $country ) : ?>
+					<?php if ( $country['country_id'] == $company_country_id ) : ?>
+					<option value="<?php echo $country['country_id']; ?>" selected="selected"><?php echo $country['name']; ?></option>
+					<?php else: ?>
+					<option value="<?php echo $country['country_id']; ?>"><?php echo $country['name']; ?></option>
+					<?php endif; ?>
+					<?php endforeach; ?>
+				</select>
+			</div>
+		</div>
+		<div class="form-group requiredd">
+			<label class="col-sm-2 control-label" for="input-country-zone"><?php echo $adk->__( 'Zone' ); ?></label>
+			<div class="col-sm-10">
+				<select name="company[zone]" id="input-payment-company-zone" class="form-control"></select>
+			</div>
+		</div>
+		<div class="form-group requiredd">
+			<label class="col-sm-2 control-label" for="input-payment-company-bank"><?php echo $adk->__( 'Bank' ); ?></label>
+			<div class="col-sm-10">
+				<input type="text" name="company[bank]" value="<?php echo $company_bank; ?>" placeholder="<?php echo $adk->__( 'Bank name' ); ?>" id="input-payment-company-bank" class="form-control">
+			</div>
+		</div>
+		<div class="form-group requiredd">
+			<label class="col-sm-2 control-label" for="input-payment-company-city"><?php echo $adk->__( 'IBAN' ); ?></label>
+			<div class="col-sm-10">
+				<input type="text" name="company[iban]" value="<?php echo $company_iban; ?>" placeholder="<?php echo $adk->__( 'Bank account' ); ?>" id="input-payment-company-iban" class="form-control">
+			</div>
+		</div>
+		<div class="form-group requiredd">
+			<label class="col-sm-2 control-label" for="input-payment-company-phone"><?php echo $adk->__( 'Phone' ); ?></label>
+			<div class="col-sm-10">
+				<input type="text" name="company[phone]" value="<?php echo $company_phone; ?>" placeholder="<?php echo $adk->__( 'Phone number' ); ?>" id="input-payment-company-phone" class="form-control">
+			</div>
+		</div>
+	</div>
+</fieldset>
+
+	<script type="text/javascript"><!--
+	$( '#input-payment-company-country' ).on('change', function() {
+		var self = $( this );
+
+		$.ajax({
+			url: 'index.php?route=checkout/checkout/country&country_id=' + this.value,
+			dataType: 'json',
+			beforeSend: function() {
+				self.after(' <i class="fa fa-circle-o-notch fa-spin"></i>');
+			},
+			complete: function() {
+				$('.fa-spin').remove();
+			},
+			success: function(json) {
+				html = '<option value=""><?php echo  $text_select; ?></option>';
+
+				if (json['zone'] && json['zone'] != '') {
+					for (i = 0; i < json['zone'].length; i++) {
+						html += '<option value="' + json['zone'][i]['zone_id'] + '"';
+
+						if (json['zone'][i]['zone_id'] == '<?php echo $company_zone_id; ?>') {
+							html += ' selected="selected"';
+						}
+
+						html += '>' + json['zone'][i]['name'] + '</option>';
+					}
+				} else {
+					html += '<option value="0" selected="selected"><?php echo $text_none; ?></option>';
+				}
+
+				$( '#input-payment-company-zone' ).html(html);
+
+				if ( "selectbox" in $ ) {
+					$( '#input-payment-company-zone' ).selectbox( "detach" );
+					$( '#input-payment-company-zone' ).selectbox();
+				}
+			},
+			error: function(xhr, ajaxOptions, thrownError) {
+				alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+			}
+		});
+	});
+
+$('#input-payment-company-country').trigger('change');
+//--></script>
+<script type="text/javascript"><!--
+$( '.company-existing' ).on( 'change', function() {
+	if ( this.value == 'false' ) {
+		$( '#company-existing-true' ).hide();
+		$( '#company-existing-false' ).show();
+
+	} else {
+		$( '#company-existing-true' ).show();
+		$( '#company-existing-false' ).hide();
+	}
+});
+
+$( "#p-fiz" ).on( "click", function(){
+	$( "fieldset#company" ).slideUp();
+	$( "#company-enabled" ).val( 0 );
+} );
+$( "#p-comp" ).on( "click", function(){
+	$( "fieldset#company" ).slideDown();
+	$( "#company-enabled" ).val( 1 );
+} );
+
+//--></script>
+<?php endif; ?><!-- Companies extension is enabled -->
+<!-- Companies modification end -->
+
+			]]>
+			</add>
+		</operation>
+	</file>
+
+	<file path="catalog/controller/checkout/success.php">
+		<operation description="clear session after successful purchase">
+			<search><![CDATA[unset($this->session->data['totals']);]]></search>
+			<add position="after"><![CDATA[	
+			unset($this->session->data['company_id']);
+			unset($this->session->data['company_code']);
+			]]></add>
+		</operation>
+	</file>
+
+	<file path="catalog/model/checkout/order.php">
+		<operation description="company name to invoice">
+			<search><![CDATA[$data = array();]]></search>
+			<add position="after"><![CDATA[
+			$model_path = ( version_compare( VERSION, '2.3.0.0', '>=') ? 'extension/' : '' ) . 'module/company';
+			$model_name = str_replace( '/', '_', $model_path );
+			$this->load->model( $model_path );
+			$c_model = $this->{"model_$model_name"};
+			$adk = \Advertikon\Company\Advertikon::instance();
+			$data['company_status'] = $adk->config( 'status' );
+			$data['company_text'] = $adk->__( 'Company details' );
+			if ( isset( $this->session->data['company_id'] ) ) {
+				$company = $adk->get_company_by_id( $this->session->data['company_id'] );
+				$data['formatted_company'] = $adk->format_company( $company );
+				$adk->add_custom_field( $this->session->data['order_id'], 'company', $this->session->data['company_id'], false );
+			}
+			]]></add>
+		</operation>
+	</file>
+
+	<file path="admin/controller/sale/order.php">
+		<operation description="company name to invoice">
+			<search><![CDATA[$this->response->setOutput($this->load->view('sale/order_invoice', $data));]]></search>
+			<add position="before"><![CDATA[
+			$model_path = ( version_compare( VERSION, '2.3.0.0', '>=') ? 'extension/' : '' ) . 'module/company';
+			$model_name = str_replace( '/', '_', $model_path );
+			$this->load->model( $model_path );
+			$c_model = $this->{"model_$model_name"};
+			$adk = \Advertikon\Company\Advertikon::instance();
+			$data['company_status'] = $adk->config( 'status' );
+			$data['company_text'] = $adk->__( 'Company details' );
+			if ( true ) {
+				$custom_d = $adk->get_custom_field( $this->request->get['order_id'], false );
+				$company_id = null;
+
+				if ( is_array( $custom_d ) && isset( $custom_d['company'] ) ) {
+					$company_id = $custom_d['company'];
+				}
+
+				if ( is_object( $custom_d ) && ! is_null( $custom_d->company ) ) {
+					$company_id = $custom_d->company;
+				}
+
+				if ( ! is_null( $company_id ) ) {
+					$company = $adk->get_company_by_id( $company_id );
+					$data['formatted_company'] = $adk->format_company( $company );
+				}
+			}
+			]]></add>
+		</operation>
+	</file>
+
+	<file path="catalog/view/theme/*/template/mail/order.tpl">
+		<operation description="company name to invoice">
+			<search><![CDATA[ <?php if ($comment) { ?>]]></search>
+			<add position="before"><![CDATA[
+			<?php if( $company_status && $formatted_company ) : ?>
+			  <table style="border-collapse: collapse; width: 100%; border-top: 1px solid #DDDDDD; border-left: 1px solid #DDDDDD; margin-bottom: 20px;">
+			    <thead>
+			      <tr>
+			        <td style="font-size: 12px; border-right: 1px solid #DDDDDD; border-bottom: 1px solid #DDDDDD; background-color: #EFEFEF; font-weight: bold; text-align: left; padding: 7px; color: #222222;"><?php echo $company_text; ?></td>
+			      </tr>
+			    </thead>
+			    <tbody>
+			      <tr>
+			        <td style="font-size: 12px;	border-right: 1px solid #DDDDDD; border-bottom: 1px solid #DDDDDD; text-align: left; padding: 7px;"><?php echo $formatted_company; ?></td>
+			      </tr>
+			    </tbody>
+			  </table>
+			<?php endif; ?>
+			]]></add>
+		</operation>
+	</file>
+
+	<file path="admin/view/template/sale/order_invoice.tpl">
+		<operation description="company name to invoice">
+			<search index="2"><![CDATA[<table class="table table-bordered">]]></search>
+			<add position="before" offset="2"><![CDATA[
+			<?php if( $company_status && $formatted_company ) : ?>
+			  <table style="border-collapse: collapse; width: 100%; border-top: 1px solid #DDDDDD; border-left: 1px solid #DDDDDD; margin-bottom: 20px;">
+			    <thead>
+			      <tr>
+			        <td style="font-size: 12px; border-right: 1px solid #DDDDDD; border-bottom: 1px solid #DDDDDD; background-color: #EFEFEF; font-weight: bold; text-align: left; padding: 7px; color: #222222;"><?php echo $company_text; ?></td>
+			      </tr>
+			    </thead>
+			    <tbody>
+			      <tr>
+			        <td style="font-size: 12px;	border-right: 1px solid #DDDDDD; border-bottom: 1px solid #DDDDDD; text-align: left; padding: 7px;"><?php echo $formatted_company; ?></td>
+			      </tr>
+			    </tbody>
+			  </table>
+			<?php endif; ?>
+			]]></add>
+		</operation>
+	</file>
+
+	<file path="catalog/controller/account/account.php">
+		<operation>
+			<search><![CDATA[$data['text_recurring'] = $this->language->get('text_recurring');]]></search>
+			<add position="after"><![CDATA[
+				$adk = \Advertikon\Company\Advertikon::instance();
+				$data['text_company'] = $adk->__( 'Manage companies list' );
+				$data['company'] = $adk->u( 'companies' );
+			]]></add>
+		</operation>
+	</file>
+
+	<file path="catalog/view/theme/*/template/account/account.tpl">
+		<operation>
+			<search><![CDATA[<li><a href="<?php echo $address; ?>"><?php echo $text_address; ?></a></li>]]></search>
+			<add position="after"><![CDATA[<li><a href="<?php echo $company; ?>"><?php echo $text_company; ?></a></li>]]></add>
+		</operation>
+	</file>
+
+</modification>
