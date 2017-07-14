@@ -1,0 +1,533 @@
+.adk-col-70,
+.adk-col-50,
+.adk-col-60,
+.adk-col-40,
+.adk-col-30 {
+	float: left;
+}
+
+.adk-col-70 {
+	width: 70%;
+}
+
+.adk-col-60 {
+	width: 60%;
+}
+
+.adk-col-50 {
+	width: 50%;
+}
+
+.adk-col-40 {
+	width: 40%;
+}
+
+.adk-col-30 {
+	width: 30%;
+}
+
+@media (max-width: 1000px) {
+	.adk-col-60,
+	.adk-col-50,
+	.adk-col-40 {
+		width: 100%;
+	}
+}
+
+.sp-payment div,
+.sp-payment input {
+	-webkit-box-sizing: border-box;
+	        box-sizing: border-box;
+	margin-right: 0;
+	margin-left: 0;
+}
+
+.adk-content {
+	padding: 15px;
+	padding-top: 0;
+}
+
+.adk-row {
+	margin-right: -15px;
+	margin-left: -15px;
+	margin-bottom: 15px;
+	overflow: hidden;
+}
+
+.adk-form-group {
+	margin-bottom: 15px;
+	position: relative;
+	overflow: hidden;
+}
+
+.adk-form-control {
+	padding: 8px 12px;
+    border-radius: 5px;
+    border: solid 1px #c0c7e8;
+    width: 100%;
+    margin: 0;
+    background-color: inherit;
+}
+
+.adk-label {
+	font-weight: bold;
+}
+
+.exp-select {
+	width: 49%
+}
+
+.adk-cvc {
+	font-weight: bold;
+    text-align: center;
+    width: 70px;
+}
+
+.sp-header {
+	text-align: center;
+}
+.currency-notification {
+	margin-bottom: 10px;
+	padding: 10px;
+
+	text-align: right;
+
+	border: solid 1px #ddd;
+
+	font-weight: bold;
+}
+.sp-payment {
+	border: solid 1px #ddd;
+}
+.sp-payment .header {
+	text-align: center;
+
+	color: #2095c1;
+}
+
+.sp-payment .credit-cards {
+	position: relative;
+
+	min-width: 293px;
+	margin: 0 auto;
+}
+.sp-payment .credit-cards .credit-cards-highlight {
+	position: absolute;
+	top: 0;
+
+	height: 100%;
+
+	background-image: url("../../../../../../../image/advertikon/stripe/stripe-cc-logos.png");
+	background-repeat: no-repeat;
+	background-position: 0;
+	background-size: cover;
+
+	-ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='path_relative_to_the_HTML_file', sizingMethod='scale')";
+}
+
+.sp-container {
+	width: 300px;
+	height: 190px;
+	margin: 10px auto;
+
+	font-size: 20px;
+	-webkit-perspective: 1000px;
+	   -o-perspective: 1000px;
+	  -ms-perspective: 1000px;
+	      perspective: 1000px;
+}
+
+/* Card effigy */
+.sp-container .sp-card {
+	position: relative;
+	top: 5px;
+
+	width: 100%;
+	height: 100%;
+
+	-webkit-transition: -webkit-transform linear 1s;
+	        transition: -webkit-transform linear 1s;
+	        transition:         transform linear 1s;
+	        transition:         transform linear 1s, -webkit-transform linear 1s;
+	-webkit-transform-style: preserve-3d;
+	   transform-style: preserve-3d;
+}
+.sp-container .sp-card .sp-face,
+.sp-container .sp-card .sp-back {
+	width: 100%;
+	height: 100%;
+
+	border: solid 2px black;
+	border-radius: 7%;
+	-webkit-backface-visibility: hidden;
+	   backface-visibility: hidden;
+	  -webkit-box-sizing: border-box;
+	          box-sizing: border-box;
+}
+.sp-container .sp-card .sp-code,
+.sp-container .sp-card .sp-expire,
+.sp-container .sp-card .sp-cvv,
+.sp-container .sp-card .sp-cardholder {
+	position: absolute;
+
+	margin: 0;
+	padding: 0;
+
+	border: none;
+
+	font-weight: bold;
+}
+.sp-container .sp-card .sp-code > input,
+.sp-container .sp-card .sp-expire > input,
+.sp-container .sp-card .sp-cvv > input,
+.sp-container .sp-card .sp-cardholder > input {
+	/*background-color: #2E8BFE;*/
+	border-width: 0;
+}
+.sp-container .sp-card .sp-face {
+	background-image: url("../../../../../../../image/advertikon/stripe/cc-front.png");
+	background-size: 100%;
+}
+.sp-container .sp-card .sp-face .sp-code {
+	top: 95px;
+	left: 13px;
+
+	width: 95%;
+	height: 25px;
+
+	background-color: #0061fd;
+}
+.sp-container .sp-card .sp-face .sp-code .sp-code-field {
+	width: 57px;
+	height: 100%;
+	margin: 0;
+	margin-left: -2px;
+	padding: 2px;
+	padding-left: 9px;
+
+	font-size: 19px;
+}
+.sp-container .sp-card .sp-face .sp-expire {
+	top: 123px;
+	left: 96px;
+
+	width: 73px;
+	height: 22px;
+}
+.sp-container .sp-card .sp-face .sp-expire .sp-expire-field {
+	width: 100%;
+	height: 100%;
+	padding: 2px;
+	padding-left: 8px;
+
+	font-size: 15px;
+}
+.sp-container .sp-card .sp-cardholder {
+	top: 153px;
+	left: 14px;
+
+	width: 184px;
+}
+.sp-container .sp-card .sp-face .sp-cardholder .sp-cardholder-field {
+	width: 100%;
+	height: 25px;
+	padding: 0;
+	padding-left: 8px;
+
+	font-size: 15px;
+}
+.sp-container .sp-card .sp-back {
+	-webkit-transform: rotateY(180deg) translateZ(1px) translateY(-190px);
+	    -ms-transform: rotateY(180deg) translateZ(1px) translateY(-190px);
+	        transform: rotateY(180deg) translateZ(1px) translateY(-190px);
+
+	background-image: url("../../../../../../../image/advertikon/stripe/cc-back.png");
+	background-size: 100%;
+}
+.sp-container .sp-card .sp-back .sp-cvv {
+	top: 67px;
+	left: 163px;
+
+	width: 59px;
+	height: 25px;
+}
+.sp-container .sp-card .sp-back .sp-cvv-field {
+	width: 100%;
+	height: 100%;
+	padding: 2px;
+	padding-left: 5px;
+
+	font-size: 23px;
+}
+.sp-container .sp-card.front {
+	-webkit-transform: rotateY(0deg);
+	    -ms-transform: rotateY(0deg);
+	        transform: rotateY(0deg);
+}
+.sp-container .sp-card.back {
+	-webkit-transform: rotateY(180deg);
+	    -ms-transform: rotateY(180deg);
+	        transform: rotateY(180deg);
+}
+
+.show-at-top {
+	vertical-align: top;
+}
+
+/* Card effigy end */
+
+
+.payment {
+	max-width: 600px;
+}
+
+.adk-vendors {
+	display:inline-block;
+	width: 24%;
+	padding: 0 5px;
+	text-align: center;
+}
+
+.adk-vendors img {
+	width: 100%;
+	-webkit-filter: grayscale( 100% );
+	        filter: grayscale( 100% );
+	opacity: 0.2;
+	-webkit-transition: all 0.5s;
+	transition: all 0.5s;
+}
+
+.adk-vendors img.active {
+	-webkit-filter: grayscale( 0% ) drop-shadow( 3px 3px 5px);
+	        filter: grayscale( 0% ) drop-shadow( 3px 3px 5px);
+	opacity: 1;
+}
+
+.cc-number-item {
+	height: 100%;
+	outline: none;
+	width: 5.2%;
+	margin: 0;
+	padding: 0;
+	border: solid 0;
+	font-weight: bold;
+}
+
+.simple-input {
+	display: block;
+	text-align: left;
+	font-weight: bold;
+}
+
+.formatted-input {
+	display: none;
+	padding-right: 25px;
+	padding-bottom: 7px;
+	max-height: 37px;
+}
+
+@media (max-width: 480px) {
+	.cc-number-cover img {
+		width: 25px;
+		top: 5px;
+	}
+}
+
+.formatted-view .simple-input {
+	display: none;
+}
+
+.formatted-view .formatted-input {
+	display: block;
+}
+
+.cc-field-switch {
+	width: 36px;
+    margin: 0;
+    padding: 0;
+    -webkit-transform: rotate(0deg);
+        -ms-transform: rotate(0deg);
+            transform: rotate(0deg);
+    cursor: pointer;
+    -webkit-transition: 0.5s ease-out;
+    transition: 0.5s ease-out;
+    position:absolute;
+    top: 0;
+    right: 2px;
+}
+
+.formatted-view .cc-field-switch {
+	-webkit-transform: rotate( 180deg );
+	    -ms-transform: rotate( 180deg );
+	        transform: rotate( 180deg );
+}
+
+.adk-vendor-slide-image {
+	-webkit-transition-property: right;
+	transition-property: right;
+    -webkit-transition-duration: 0.5s;
+    transition-duration: 0.5s;
+    -webkit-transition-timing-function: cubic-bezier(0.6,-0.1, 0.82, 1.62);
+    transition-timing-function: cubic-bezier(0.6,-0.1, 0.82, 1.62);
+
+	position: absolute;
+	top:1px;   
+	right: -100px;
+}
+
+.default-card {
+	background-color: blue;
+	color: white;
+}
+
+.adk-overlay {
+	position: absolute;
+	width: 100%;
+	background: rgb( 0, 0, 0 );
+	background: rgba( 0, 0, 0, 0.6 );
+	top: 0;
+	left: 0;
+	z-index: 9999;
+	opacity: 0;
+	-webkit-transition: opacity 0.3s ease;
+	transition: opacity 0.3s ease;
+}
+
+.bogus-confirm-button {
+    padding: 15px;
+    border-radius: 7px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #45b1e8;
+    border: none;
+    -webkit-box-shadow: 1px 1px 10px #000, inset 2px 2px 3px #0a60c1, inset 4px 4px 4px #fff;
+            box-shadow: 1px 1px 10px #000, inset 2px 2px 3px #0a60c1, inset 4px 4px 4px #fff;
+    font-size: 150%;
+    position: relative;
+    -webkit-transition: top 0.3s cubic-bezier(0.07, 0.6, 0.84, 1.18);
+    transition: top 0.3s cubic-bezier(0.07, 0.6, 0.84, 1.18);
+    -webkit-animation: twitch .2s cubic-bezier(0.32, -0.38, 0.58, 1.51) 0.3s 2 reverse;
+            animation: twitch .2s cubic-bezier(0.32, -0.38, 0.58, 1.51) 0.3s 2 reverse;
+}
+
+@-webkit-keyframes twitch {
+	0%, 50%, 100% {
+		-webkit-transform: rotate( 0deg );
+		        transform: rotate( 0deg );
+	}
+
+	25% {
+		-webkit-transform: rotate( 6deg );
+		        transform: rotate( 6deg );
+	}
+
+	75% {
+		-webkit-transform: rotate( -6deg );
+		        transform: rotate( -6deg );
+	}
+}
+
+@keyframes twitch {
+	0%, 50%, 100% {
+		-webkit-transform: rotate( 0deg );
+		        transform: rotate( 0deg );
+	}
+
+	25% {
+		-webkit-transform: rotate( 6deg );
+		        transform: rotate( 6deg );
+	}
+
+	75% {
+		-webkit-transform: rotate( -6deg );
+		        transform: rotate( -6deg );
+	}
+}
+
+.adk-to-show {
+	display: none;
+}
+
+/*Journal quick-checkout fix*/
+html[class*=journal][class*=quick-checkout-page] #payment-form #button-confirm {
+	display: none;
+}
+
+.alert {
+	padding: 8px 14px 8px 14px;
+}
+.alert h4 {
+	margin-top: 0;
+
+	color: inherit;
+}
+.alert .alert-link {
+	font-weight: bold;
+}
+.alert > p,
+.alert > ul {
+	margin-bottom: 0;
+}
+.alert > p + p {
+	margin-top: 5px;
+}
+.alert-dismissable,
+.alert-dismissible {
+	padding-right: 35px;
+}
+.alert-dismissable .close,
+.alert-dismissible .close {
+	position: relative;
+	top: -2px;
+	right: -21px;
+
+	color: inherit;
+}
+.alert-success {
+	color: #3c763d;
+	border-color: #d6e9c6;
+	background-color: #dff0d8;
+}
+.alert-success hr {
+	border-top-color: #c9e2b3;
+}
+.alert-success .alert-link {
+	color: #2b542c;
+}
+.alert-info {
+	color: #31708f;
+	border-color: #bce8f1;
+	background-color: #d9edf7;
+}
+.alert-info hr {
+	border-top-color: #a6e1ec;
+}
+.alert-info .alert-link {
+	color: #245269;
+}
+.alert-warning {
+	color: #8a6d3b;
+	border-color: #faebcc;
+	background-color: #fcf8e3;
+}
+.alert-warning hr {
+	border-top-color: #f7e1b5;
+}
+.alert-warning .alert-link {
+	color: #66512c;
+}
+.alert-danger {
+	color: #a94442;
+	border-color: #ebccd1;
+	background-color: #f2dede;
+}
+.alert-danger hr {
+	border-top-color: #e4b9c0;
+}
+.alert-danger .alert-link {
+	color: #843534;
+}
+
+/*.journal-checkout #payment-confirm-button #button-confirm {
+	display: none;
+}*/
