@@ -315,9 +315,8 @@
 
 .simple-input {
 	display: block;
-	text-align: center;
+	text-align: left;
 	font-weight: bold;
-	letter-spacing: 10px;
 }
 
 .formatted-input {
@@ -325,6 +324,13 @@
 	padding-right: 25px;
 	padding-bottom: 7px;
 	max-height: 37px;
+}
+
+@media (max-width: 480px) {
+	.cc-number-cover img {
+		width: 25px;
+		top: 5px;
+	}
 }
 
 .formatted-view .simple-input {

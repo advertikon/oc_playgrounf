@@ -1153,7 +1153,7 @@
 					"</span>"
 					);
 				},
-				templateSelection: function t( systems ) {
+				templateSelection: function t( systems ) { console.log( systems );
 					if ( typeof systems.id === "undefined" ) {
 						return systems.text;
 					}

@@ -3,4 +3,4 @@ include_regexp:
 code : advertikon_stripe
 major : 2
 minor : 8
-patch : 14
+patch : 15

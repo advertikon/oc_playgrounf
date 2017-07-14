@@ -478,7 +478,6 @@ class ControllerExtensionPaymentAdvertikonStripe extends Controller {
 			'error'       => isset( $resp['input_errors'][ $name ] ) ?
 				$resp['input_errors'][ $name ] : null,
 		) );
-
 		$id = 'avail_systems';
 		$name = $this->a->build_name( $id, '-' );
 		$data[ $id ] = $this->a->r()->render_form_group( array(
