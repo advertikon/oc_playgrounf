@@ -1,0 +1,28 @@
+#!/bin/bash
+
+code=adk_mail
+short_code=mail
+type=module
+
+echo $code
+echo $short_code
+echo $type
+
+for f in \
+	system/library/advertikon/$short_code/ \
+	admin/view/javascript/advertikon/$short_code \
+	admin/view/stylesheet/advertikon/$short_code \
+	admin/view/template/extension/$type/$code.tpl \
+	admin/controller/extension/$type/$code.php \
+	admin/model/extension/$type/$code.php \
+	admin/language/en-gb/extension/$type/$code.php \
+	catalog/controller/extension/$type/$code.php \
+	catalog/view/javascript/advertikon/$short_code/ \
+	catalog/view/theme/default/template/extension/$type/advertikon/$short_code/ \
+	catalog/view/theme/default/template/extension/$type/$code.tpl \
+	catalog/view/theme/default/template/mail/adk* \
+	system/$code.ocmod.xml
+
+do
+	git add -f $f
+done

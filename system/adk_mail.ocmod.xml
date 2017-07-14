@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+	<name>Mail Manager</name>
+	<code>adk_mail</code>
+	<version>2.0</version>
+	<author>Advertikon</author>
+	<link>http://www.advertikon.com.ua</link>
+	<file path="system/library/mail.php">
+		<operation>
+			<search regex="">
+			<![CDATA[public function send() {]]>
+			</search>
+			<add position="after">
+			<![CDATA[
+			if( class_exists( '\Advertikon\Mail\Advertikon' ) ) {
+				$h = \Advertikon\Mail\Advertikon::instance();
+				if ( ! is_null( $adk_res = $h->process( $this ) ) ) {
+					return $adk_res;
+				}
+			}
+			]]>
+			</add>
+		</operation>
+		<operation>
+			<search regex="true">~protected~</search>
+			<add position="replace">public</add>
+		</operation>
+	</file>
+	<file path="admin/controller/marketing/contact.php">
+		<operation>
+			<search regex="true"><![CDATA[~\$this->response->setOutput\(\$this->load->view\('marketing/contact.*?\n\r?~]]></search>
+			<add position="replace"><![CDATA[
+				if( class_exists( '\Advertikon\Mail\Advertikon' ) ) {
+					$h = \Advertikon\Mail\Advertikon::instance();
+
+					if ( $h->config( 'status' ) && $h->config( 'extended_newsletter' )  ) {
+						$data = array_merge( $data, $h->marketing_data() );
+						$this->response->setOutput( $this->load->view( $h->type . '/' . $h->code . '_marketing.tpl', $data ) );
+
+					} else {
+						$this->response->setOutput($this->load->view('marketing/contact.tpl', $data));
+					}
+				}
+			]]></add>
+		</operation>
+	</file>
+	<file path="catalog/model/checkout/order.php">
+		<operation>
+			<search regex="">
+			<![CDATA[$order_info = $this->getOrder($order_id);]]>
+			</search>
+			<add position="after">
+			<![CDATA[
+			if( function_exists( 'ADK' ) ) {
+				ADK()->add_to_cache( 'old_order', $order_info );
+			}
+			]]>
+			</add>
+		</operation>
+		<operation>
+			<search regex="">
+			<![CDATA[// Text Mail]]>
+			</search>
+			<add position="before">
+			<![CDATA[
+			if( function_exists( 'ADK' ) ) {
+				ADK()->add_to_cache( 'old_order_data', $data );
+			}
+			]]>
+			</add>
+		</operation>
+	</file>
+	<file path="system/engine/front.php">
+		<operation>
+			<ignoreif>
+				<![CDATA[$adk_registry = $registry;]]>
+			</ignoreif>
+			<search>
+				<![CDATA[$this->registry = $registry;]]>
+			</search>
+			<add position="after">
+				<![CDATA[global $adk_registry; $adk_registry = $registry;]]>
+			</add>
+		</operation>
+		
+		<operation>
+			<search>
+				<![CDATA[global $adk_registry; $adk_registry = $registry;]]>
+			</search>
+			<add position="after">
+				<![CDATA[
+				if( class_exists( '\Advertikon\Mail\Advertikon' ) ) {
+					$q = $this->registry->get( 'request' )->get;
+
+					if ( isset( $q['adk'] ) ) {
+						$h = \Advertikon\Mail\Advertikon::instance()->track_subscriber();
+					}
+				}
+				]]>
+			</add>
+		</operation>
+
+	</file>
+</modification>
