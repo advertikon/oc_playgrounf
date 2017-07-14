@@ -9,6 +9,7 @@
 		window.ADK.locale = {};
 	}
 
+
 	$.extend( window.ADK.locale, {
 		scriptError:         "Script Error",
 		serverError:         "Server Error",
